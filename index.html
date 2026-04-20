@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>소막마을 탐험대 - 야외 방탈출</title>
-  
   <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -42,7 +40,38 @@
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    .bg-s-beige { background-color: #F3E4C9; }
+    .bg-s-olive { background-color: #BABF94; }
+    .bg-brown-dark { background-color: #A98B76; }
+    .bg-brown-light { background-color: #BFA28C; }
+    .text-brown-dark { color: #A98B76; }
+    .text-brown-light { color: #BFA28C; }
+    .border-brown-dark { border-color: #A98B76; }
+    .border-brown-light { border-color: #BFA28C; }
+    .border-s-olive { border-color: #BABF94; }
+    .hover\:bg-brown-dark:hover { background-color: #A98B76; }
+    .hover\:bg-brown-light:hover { background-color: #BFA28C; }
+    .hover\:bg-s-olive:hover { background-color: #BABF94; }
+    .selection\:bg-s-olive::selection { background-color: #BABF94; }
+    .selection\:text-white::selection { color: white; }
+    .bg-opacity-70 { --tw-bg-opacity: 0.7; }
+    .bg-opacity-95 { --tw-bg-opacity: 0.95; }
+    .bg-s-olive.bg-opacity-95 { background-color: rgba(186, 191, 148, 0.95); }
+    .bg-brown-light.bg-opacity-70 { background-color: rgba(191, 162, 140, 0.7); }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+  </style>
 </head>
 <body class="bg-s-beige text-gray-800 antialiased font-sans min-h-screen selection:bg-s-olive selection:text-white">
   <div id="root"></div>
