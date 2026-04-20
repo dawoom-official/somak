@@ -117,10 +117,11 @@
         quizNumber: 1,
         story: "고마워요!\n\n먼저 제 친구 누룽지를 찾아주세요.\n누룽지가 단서를 알고 있을 거에요!",
         leafletRef: "리플릿 1페이지",
-        question: "안내판을 잘 살펴보고,\n리플릿의 도구를 활용하여\n누룽지가 있는 장소를 알아내세요!",
+        image: "https://cdn.imweb.me/upload/S20250909113da8430df71/cdae8a0418b39.png",
+        question: "안내판을 잘 살펴보고,\n리플릿을 활용하여\n누룽지가 있는 장소를 알아내세요!",
         hints: [
-          "안내판의 소 그림을 잘 살펴보세요.",
-          "리플릿의 격자에서 소 그림의 수만큼 칸을 이동해보세요."
+          "숫자는 세 자리예요. 간판 글귀에서 찾아보세요!",
+          "181 = 1번째 줄, 8번째 글자 '석', 첫 번째 자모 → ㅅ"
         ],
         answer: ["소막사"]
       },
@@ -129,7 +130,7 @@
         type: "clue",
         location: "소 동상",
         character: "누렁이",
-        story: "소막사!\n맞아요, 누룽지는 소막사에 있어요!\n\n커뮤니티 센터 안에 있을 거에요.\n어서 가보세요!\n\n여기, 친구를 찾는 데 도움이 될\n단서 조각을 드릴게요.",
+        story: "소막사!\n맞아요, 누룽지는 소막사에 있어요!\n\n커뮤니티 센터 안에 있을 거에요.\n어서 가보세요!\n\n여기, 친구를 찾는 데 도움이 될 단서 조각을 드릴게요.",
         clueFragment: "I",
         clueIndex: 1,
         button: "소막사로 가보자!"
@@ -151,7 +152,7 @@
         quizNumber: 2,
         story: "누룽지가 어딘가를\n뚫어져라 쳐다보고 있다.\n\n누룽지와 함께할 수 있도록\n문제를 풀어보자!",
         leafletRef: "리플릿 2페이지",
-        question: "누룽지가 바라보는 곳의 단서를 찾아,\n리플릿으로 해독하세요!",
+        question: "누룽지가 바라보는 곳의 단서를 찾아,\n리플릿을 참고해서 해독하세요!",
         hints: [
           "센터 내부 전시물을 잘 살펴보세요.",
           "(현장 답사 후 확정)"
@@ -185,27 +186,36 @@
         type: "story",
         location: "가분수주택 골목",
         character: "누룽지",
+        image: "https://cdn.imweb.me/upload/S20250909113da8430df71/6b6a4190980fa.png",
         story: "여기 봐요!\n\n1층보다 2층이 더 튀어나온\n신기한 집들이에요!\n\n좁은 땅에서 조금이라도 넓게 살려고\n피난민들이 만든 지혜래요.\n'가분수주택'이라고 불러요.\n\n세월의 흔적이 많이 남아있지만,\n그만큼 진짜 삶의 이야기가 담긴 곳이에요.",
-        button: "단서를 찾아보자!"
+        button: "이대로 길을 따라 가볼까?"
+      },
+      {
+        id: 7.5,
+        type: "move",
+        location: "소막마을 벽화",
+        character: "누룽지",
+        story: "건너 편에 멋진 벽화가 있는데요?\n옛날 소막마을 모습이 그려져 있어요.\n어쩌면 저기 건너가면 친구의 흔적이 있을지도!",
+        button: "건너가자!"
       },
       {
         id: 8,
         type: "quiz",
-        location: "가분수주택 골목",
+        location: "소막마을 벽화",
         quizNumber: 3,
-        story: "이 골목 어딘가에\n다음 장소의 힌트가 숨어있을 거에요!",
+        story: "어! 벽화 뒤에 ",
         leafletRef: "리플릿 3페이지",
         question: "골목을 관찰하고,\n리플릿의 도구로 다음 장소를 알아내세요!",
         hints: [
           "(현장 답사 후 확정)",
           "(현장 답사 후 확정)"
         ],
-        answer: ["벽화"]
+        answer: ["백년우물"]
       },
       {
         id: 9,
         type: "clue",
-        location: "가분수주택 골목",
+        location: "백년우물",
         character: "누룽지",
         story: "벽화!\n\n이 골목을 쭉 따라가면\n큰 벽화가 있어요!\n\n옛날 소막마을 모습이 그려져 있대요.\n거기에 친구의 흔적이 있을지도!",
         clueFragment: "A",
@@ -680,6 +690,17 @@
                       className="text-brown-dark font-semibold leading-relaxed text-[14px] text-center"
                     />
                   </div>
+
+                  {/* 안내판 이미지 */}
+                  {stage.image && (
+                    <div className="mb-4 rounded-2xl overflow-hidden border-2 border-brown-light">
+                      <img
+                        src={stage.image}
+                        alt="안내판"
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                  )}
 
                   {/* 리플릿 안내 */}
                   {stage.leafletRef && (
