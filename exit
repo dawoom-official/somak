@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>소막마을 탐험대 - 야외 방탈출</title>
+  
+  <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brown-dark': '#A98B76',
+            'brown-light': '#BFA28C',
+            's-beige': '#F3E4C9',
+            's-olive': '#BABF94',
+          },
+          fontFamily: {
+            sans: ['SUIT', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-out forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body class="bg-s-beige text-gray-800 antialiased font-sans min-h-screen selection:bg-s-olive selection:text-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // ── 아이콘 ──
+    const MapPin = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+    const Lightbulb = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>;
+    const Check = () => <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+    const Leaflet = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>;
+
+    // ══════════════════════════════════════════
+    //  문제 데이터 — 여기만 교체하면 됩니다!
+    // ══════════════════════════════════════════
+    const stages = [
+      {
+        id: 1,
+        title: "소 동상",
+        story: "음메~ 음메~ 드디어 오셨군요! 저는 소막마을의 안내자 '무럭이'입니다. 마을의 잃어버린 기억을 찾아주시겠어요?",
+        leafletRef: "리플릿 1페이지",
+        question: "소 동상 안내판에서 색깔 단서를 찾고, 리플릿 암호표에 대입하여 비밀번호를 입력하세요.",
+        hints: [
+          "안내판에 적힌 글씨 중 '빨간색'과 '초록색' 단어를 찾으셨나요?",
+          "리플릿 암호표에서 빨간색 = 5, 초록색 = 2 → 5 - 2 = ?"
+        ],
+        answer: ["3", "삼"]
+      },
+      {
+        id: 2,
+        title: "소막사 커뮤니티센터",
+        story: "여기에 저희 집이 있던 건 어떻게 아셨어요? 마침 제 친구 고양이 '누룽지'가 저기 있네요!",
+        leafletRef: "리플릿 2페이지",
+        question: "전시관 바닥에 적힌 연도를 확인하고, 리플릿의 기호표에서 해당 숫자들을 변환하세요.",
+        hints: [
+          "바닥에 적힌 연도는 네 자리 숫자입니다.",
+          "리플릿 기호표에서 1, 9, 5, 0에 해당하는 글자를 순서대로 조합해보세요."
+        ],
+        answer: ["피난민", "피난"]
+      },
+      {
+        id: 3,
+        title: "가분수주택",
+        story: "1층보다 2층이 튀어나온 가분수처럼 생긴 집이에요! 오래 사신 '말자 할머니'가 다음 단서를 아실지도 몰라요.",
+        leafletRef: "리플릿 3페이지",
+        question: "현장의 파란색 도로명 주소 표지판 숫자를 확인하고, 리플릿의 미로에서 정답을 찾으세요.",
+        hints: [
+          "도로명 주소 표지판의 숫자를 잘 보세요.",
+          "리플릿 미로에서 해당 번호 입구로 들어가면 도착 지점에 알파벳이 있습니다."
+        ],
+        answer: ["B", "b"]
+      },
+      {
+        id: 4,
+        title: "주민공동체 센터",
+        story: "이곳에서는 주민들이 모여 재미있는 활동들을 한답니다. 무엇을 만들고 있는지 확인해볼까요?",
+        leafletRef: "리플릿 4페이지",
+        question: "센터 앞 유리에 붙어있는 포스터의 가장 큰 글자를 리플릿 암호판에 대입하세요.",
+        hints: [
+          "포스터에서 가장 크게 적힌 두 글자를 찾으세요.",
+          "리플릿 암호판에서 두 글자가 교차하는 지점의 숫자가 정답입니다."
+        ],
+        answer: ["77"]
+      },
+      {
+        id: 5,
+        title: "소막마을 테마벽화",
+        story: "벽화 골목에 도착했어요! 옛날 소막마을의 북적북적한 시장 모습이 그대로 그려져 있네요.",
+        leafletRef: "리플릿 5페이지",
+        question: "벽화 속 소달구지를 끄는 아저씨의 조끼 색깔을 찾아, 리플릿 컬러 팔레트 번호를 입력하세요.",
+        hints: [
+          "아저씨의 조끼 색깔을 잘 보세요.",
+          "리플릿 컬러 팔레트에서 해당 색의 번호가 정답입니다."
+        ],
+        answer: ["4", "사"]
+      },
+      {
+        id: 6,
+        title: "백년우물",
+        story: "피난 시절 사람들의 생명수 역할을 했던 100년 된 우물가에 도착했어요. 목이 마르네요!",
+        leafletRef: "리플릿 6페이지",
+        question: "현장 안내판에서 우물이 만들어진 연도를 찾아, 리플릿의 자물쇠 퍼즐을 풀어보세요.",
+        hints: [
+          "안내판에서 우물이 만들어진 연도를 찾으세요.",
+          "연도의 마지막 두 자리가 리플릿 자물쇠의 비밀번호입니다."
+        ],
+        answer: ["20", "이십"]
+      },
+      {
+        id: 7,
+        title: "내호냉면",
+        story: "배가 고프니 맛있는 냄새가 이끄는 곳으로 왔어요! 부산 최초의 밀면을 만들었다는 유명한 식당이에요.",
+        leafletRef: "리플릿 7페이지",
+        question: "현장 간판에서 이 식당이 몇 대째인지 확인하고, 리플릿의 계산 퍼즐을 풀어보세요.",
+        hints: [
+          "간판에서 '○대'라는 글자를 찾으세요.",
+          "리플릿 퍼즐의 빈칸에 해당 숫자를 넣고 계산하면 정답이 나옵니다."
+        ],
+        answer: ["12", "십이"]
+      },
+      {
+        id: 8,
+        title: "동항성당",
+        story: "마지막 장소인 성당에 도착했어요! 멋진 예수상이 항구를 따뜻하게 내려다보고 있네요.",
+        leafletRef: "리플릿 8페이지",
+        question: "성당 입구 머릿돌에서 설립 연도를 찾아 리플릿의 최종 암호표에 대입하세요.",
+        hints: [
+          "머릿돌에 새겨진 네 자리 숫자를 찾으세요.",
+          "리플릿 암호표에서 각 숫자에 해당하는 글자를 모으면 두 글자 단어가 됩니다."
+        ],
+        answer: ["평화"]
+      }
+    ];
+
+    function App() {
+      const [step, setStep] = useState(0);
+      const [inputValue, setInputValue] = useState("");
+      const [hintLevel, setHintLevel] = useState(0);
+      const [errorMsg, setErrorMsg] = useState("");
+      const [isSuccess, setIsSuccess] = useState(false);
+
+      const stageIndex = step - 1;
+      const stage = stages[stageIndex];
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!inputValue.trim()) return;
+
+        const normalizedInput = inputValue.replace(/\s+/g, '').toLowerCase();
+        const isCorrect = stage.answer.some(ans =>
+          ans.replace(/\s+/g, '').toLowerCase() === normalizedInput
+        );
+
+        if (isCorrect) {
+          setIsSuccess(true);
+          setErrorMsg("");
+          setTimeout(() => {
+            setIsSuccess(false);
+            setInputValue("");
+            setHintLevel(0);
+            setStep(prev => prev + 1);
+            window.scrollTo(0, 0);
+          }, 1500);
+        } else {
+          setErrorMsg("정답이 아닙니다. 현장과 리플릿의 단서를 다시 확인해보세요!");
+          setTimeout(() => setErrorMsg(""), 3000);
+        }
+      };
+
+      // ── 인트로 ──
+      if (step === 0) {
+        return (
+          <div className="min-h-screen flex flex-col items-center justify-center p-6">
+            <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-md overflow-hidden border-4 border-brown-light">
+              <div className="bg-brown-dark py-12 px-6 text-center shadow-inner">
+                <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">소막마을 탐험대</h1>
+                <p className="text-s-beige font-semibold text-lg">마을의 잃어버린 기억을 찾아서</p>
+              </div>
+              <div className="p-8 text-center bg-white">
+                <p className="text-gray-700 font-medium leading-loose mb-6">
+                  지도를 따라 소막마을의 명소를 방문하고,<br/>
+                  <strong className="text-brown-dark">현장의 단서</strong>와 <strong className="text-s-olive">리플릿의 암호표</strong>를<br/>
+                  조합하여 정답을 알아내세요!
+                </p>
+                <div className="bg-s-beige bg-opacity-50 rounded-2xl p-5 mb-8 text-left space-y-3">
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 bg-brown-dark text-white rounded-full flex items-center justify-center font-extrabold text-sm">1</span>
+                    <p className="text-sm font-semibold text-gray-700 pt-1">화면의 스토리와 질문을 읽으세요</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 bg-brown-dark text-white rounded-full flex items-center justify-center font-extrabold text-sm">2</span>
+                    <p className="text-sm font-semibold text-gray-700 pt-1">현장에서 단서를 찾으세요</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 bg-s-olive text-white rounded-full flex items-center justify-center font-extrabold text-sm">3</span>
+                    <p className="text-sm font-semibold text-gray-700 pt-1">리플릿의 암호표로 정답을 해독하세요</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setStep(1)}
+                  className="w-full bg-brown-dark hover:bg-brown-light text-white text-lg font-bold py-4 px-6 rounded-2xl transition-all shadow-md active:scale-95"
+                >
+                  탐험 시작하기
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ── 엔딩 ──
+      if (step > stages.length) {
+        return (
+          <div className="min-h-screen flex flex-col items-center justify-center p-6">
+            <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-md p-8 text-center border-4 border-s-olive">
+              <div className="w-24 h-24 bg-s-olive rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Check />
+              </div>
+              <h2 className="text-3xl font-extrabold text-brown-dark mb-4">탐험 완료!</h2>
+              <p className="text-gray-700 leading-loose mb-8 font-medium">
+                축하합니다!<br/>모든 미션을 완벽하게 해결하셨습니다.<br/><br/>
+                이제 다시 처음 만났던<br/>
+                <strong className="text-xl text-s-olive border-b-2 border-s-olive pb-1">소막사 커뮤니티센터</strong>로 돌아가서<br/>
+                탐험 완료를 알려주세요!
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-brown-light text-white font-bold py-4 px-6 rounded-2xl hover:bg-brown-dark transition-colors"
+              >
+                처음으로 돌아가기
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      // ── 게임 진행 ──
+      return (
+        <div className="min-h-screen flex flex-col items-center py-6 px-4">
+          <div className="w-full max-w-md">
+
+            {/* 진행도 */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-white px-5 py-2 rounded-full shadow-sm border border-s-beige font-extrabold text-brown-dark tracking-wide">
+                STAGE {stage.id} / {stages.length}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden pb-4">
+
+              {/* 장소명 */}
+              <div className="bg-brown-light py-5 px-4 text-center">
+                <h2 className="text-2xl font-extrabold text-white flex items-center justify-center gap-2 drop-shadow-md">
+                  <MapPin />
+                  {stage.title}
+                </h2>
+              </div>
+
+              <div className="p-5">
+
+                {/* 1. 스토리 */}
+                <div className="bg-s-beige bg-opacity-30 rounded-2xl p-5 mb-5 text-center">
+                  <p className="text-brown-dark font-semibold leading-relaxed text-[15px]">
+                    "{stage.story}"
+                  </p>
+                </div>
+
+                {/* 2. 리플릿 안내 (기존 이미지 자리) */}
+                <div className="mb-5 bg-white border-2 border-dashed border-s-olive rounded-2xl p-5 text-center">
+                  <div className="flex items-center justify-center gap-2 text-s-olive mb-2">
+                    <Leaflet />
+                    <span className="text-sm font-extrabold tracking-wide uppercase">리플릿을 펼쳐주세요</span>
+                  </div>
+                  <p className="text-brown-dark text-2xl font-extrabold">{stage.leafletRef}</p>
+                </div>
+
+                {/* 3. 질문 */}
+                <div className="mb-5 px-1">
+                  <p className="text-gray-800 font-bold text-[15px] leading-relaxed text-center bg-gray-50 py-4 px-4 rounded-xl border border-gray-200">
+                    <span className="text-s-olive font-extrabold mr-1">Q.</span>
+                    {stage.question}
+                  </p>
+                </div>
+
+                {/* 4. 정답 입력 */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="정답을 입력하세요"
+                    disabled={isSuccess}
+                    className="w-full bg-white border-2 border-s-beige text-center text-xl font-bold p-4 rounded-2xl focus:outline-none focus:border-brown-light transition-colors shadow-sm"
+                  />
+
+                  {errorMsg && (
+                    <p className="text-red-500 text-sm font-bold text-center animate-bounce">{errorMsg}</p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setHintLevel(hintLevel === 0 ? 1 : 0)}
+                      className={`flex-shrink-0 p-4 rounded-2xl transition-colors flex items-center justify-center shadow-sm ${
+                        hintLevel > 0 ? 'bg-s-olive text-white' : 'bg-s-beige text-brown-dark hover:bg-brown-light hover:text-white'
+                      }`}
+                    >
+                      <Lightbulb />
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isSuccess}
+                      className={`flex-1 text-white font-bold p-4 rounded-2xl transition-all text-lg shadow-sm ${
+                        isSuccess ? 'bg-s-olive' : 'bg-brown-dark hover:bg-brown-light'
+                      }`}
+                    >
+                      {isSuccess ? '정답입니다! 👏' : '정답 확인'}
+                    </button>
+                  </div>
+                </form>
+
+                {/* 5. 힌트 (배열 기반 — 단계적 오픈) */}
+                {hintLevel > 0 && (
+                  <div className="mt-5 bg-[#fffdf0] border-2 border-[#f7e092] rounded-2xl p-5 text-center animate-fade-in">
+                    {stage.hints.slice(0, hintLevel).map((h, i) => (
+                      <div key={i} className={`${i > 0 ? 'mt-3 pt-3 border-t-2 border-[#f7e092] border-dashed animate-fade-in' : ''}`}>
+                        <p className={`font-bold text-[15px] leading-relaxed ${
+                          i === stage.hints.length - 1 && hintLevel >= stage.hints.length
+                            ? 'text-[#e05e5e]' : 'text-brown-dark'
+                        }`}>
+                          {h}
+                        </p>
+                      </div>
+                    ))}
+
+                    {hintLevel < stage.hints.length && (
+                      <button
+                        onClick={() => setHintLevel(prev => prev + 1)}
+                        className="mt-4 bg-brown-light text-white text-sm font-bold py-2.5 px-5 rounded-full hover:bg-brown-dark transition-colors shadow-sm"
+                      >
+                        다음 힌트 보기
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 정답 연출 */}
+            {isSuccess && (
+              <div className="fixed inset-0 bg-s-olive bg-opacity-95 flex items-center justify-center z-50 transition-all duration-300">
+                <div className="text-center animate-bounce">
+                  <div className="w-24 h-24 border-4 border-white rounded-full flex items-center justify-center mx-auto mb-4 bg-s-olive shadow-2xl">
+                    <Check />
+                  </div>
+                  <h2 className="text-white font-black text-4xl tracking-widest drop-shadow-md">정답!</h2>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
