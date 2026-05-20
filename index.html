@@ -94,7 +94,7 @@
     const StoryText = ({ text, className = "" }) => (
       <div className={className}>
         {text.split('\n').map((line, i) => (
-          <p key={i} className="leading-snug">{line}</p>
+          <p key={i} className={`${i > 0 ? 'mt-2' : ''}`}>{line}</p>
         ))}
       </div>
     );
@@ -779,25 +779,24 @@
                     키오스크에서 단서 조각을 입력하고<br/>누렁이의 친구가 누구인지 밝혀보세요! 🐄
                   </p>
 
-                  {/* QR 코드 영역 */}
+                  {/* 만족도 조사 */}
                   <div className="w-full bg-s-beige bg-opacity-40 rounded-2xl p-5 flex flex-col items-center gap-3">
                     <p className="text-sm font-extrabold text-brown-dark">📋 만족도 조사</p>
                     <p className="text-xs text-gray-500 text-center">탐험은 어떠셨나요?<br/>소중한 의견을 남겨주세요!</p>
-                    <div className="bg-white rounded-2xl p-3 shadow-sm">
-                      <img
-                        src={"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent("https://forms.gle/j8Kn8BCGz42ErNxC9")}
-                        alt="만족도 조사 QR"
-                        className="w-44 h-44"
-                      />
-                    </div>
                     <a
                       href="https://forms.gle/j8Kn8BCGz42ErNxC9"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-brown-dark underline font-bold"
+                      className="w-full bg-brown-dark hover:bg-brown-light text-white font-bold py-3 rounded-2xl text-sm text-center transition-all active:scale-95"
                     >
-                      링크로 바로 가기
+                      만족도 조사 참여하기 →
                     </a>
+                  </div>
+
+                  {/* 기념품 안내 */}
+                  <div className="w-full bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-extrabold text-amber-700">🎁 키오스크를 끝낸 후,</p>
+                    <p className="text-sm font-bold text-amber-700 mt-1">안내데스크에서 완료 기념품<br/>잊지말고 받아가세요!</p>
                   </div>
                 </div>
               </div>
