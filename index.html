@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>소막마을 탐험대 - 야외 방탈출</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
   <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -212,6 +213,7 @@
         id: 9,
         type: "story",
         location: "골목",
+        showMapButton: true,
         character: "누룽지",
         image: "https://cdn.imweb.me/upload/S20250909113da8430df71/bd80b489454ff.png",
         story: "지도에 표시된 별표에서 뒤를 돌아봤어요?\n사진과 같은 특이한 주택들이 보일 거에요!\n2층이 조금씩 튀어나와있죠?\n\n저게 바로 '가분수주택'이에요!\n소막사로 만든 집에\n자식들을 위해 2층을 더 만들 때\n'우리 아이들은 더 넓게 살아라' 하고\n2층을 1평 정도 더 크게 만든 거예요.\n\n그래서 위가 더 큰 가분수 형태가 됐죠!\n부모님들의 사랑이 아마 가장 멋진 보물일거에요... 훌쩍...🐮\n 어라, 어디서 향긋한 냄새가 나는데요? ...킁킁",
@@ -305,7 +307,7 @@
         quizNumber: 4,
         story: "누렁이 친구는 이 곳 말고 다른 곳에서 음식도 줬다고했는데\n ... 거기가 어디였더라? ",
         leafletRef: "제4장. 돌고 도는 기억",
-        question: "리플렛에 있는 암호표에 네모난 '비밀 창문'을 올리고,\n오른쪽으로 빙글빙글 돌리면서 나타나는 글자들을 차례대로 읽고 다음 장소를 찾아보세요.",
+        question: "리플렛에 있는 암호표에 네모난 '비밀 창문'을 올리고,\n오른쪽으로 빙글빙글 돌리면서 나타나는 글자들을\n차례대로 읽고 다음 장소를 찾아보세요.",
         hints: [
           "처음 비밀 창문을 올리면 '다,음,장,소' 4글자가 보일 거예요.",
           "계속 돌리면서 읽어보세요. 다음장소 / 는바로여 / 기맛있는 / ○○○○"
@@ -641,6 +643,8 @@
       const [isSuccess, setIsSuccess] = useState(false);
       const [collectedClues, setCollectedClues] = useState(savedClues);
       const [showClueAnimation, setShowClueAnimation] = useState(false);
+      const [showComplete, setShowComplete] = useState(false);
+      const [showMapModal, setShowMapModal] = useState(false);
 
       const stage = step >= 0 ? stages[step] : null;
 
@@ -745,6 +749,64 @@
         );
       }
 
+      /* ═══ 완료 페이지 ═══ */
+      if (showComplete) {
+        return (
+          <div className="min-h-screen flex flex-col items-center py-8 px-4 bg-s-beige">
+            <div className="w-full max-w-md flex flex-col gap-4">
+
+              {/* 단서 바 */}
+              <div className="flex justify-center">
+                <div className="bg-white rounded-full shadow-sm border border-s-beige px-4 py-2 flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-gray-400 mr-1">단서</span>
+                  {["T","N","A","O","N","O","I"].map((letter, i) => (
+                    <div key={i} className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold bg-amber-400 text-white shadow-sm">
+                      {letter}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 완료 카드 */}
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-s-olive">
+                <div className="bg-s-olive py-6 px-4 text-center">
+                  <div className="text-4xl mb-2">🎉</div>
+                  <h2 className="text-xl font-extrabold text-white mb-1">탐험 완료!</h2>
+                  <p className="text-white text-sm opacity-80">소막마을 탐험대원 인증!</p>
+                </div>
+                <div className="p-5 flex flex-col items-center gap-4">
+                  <p className="text-brown-dark font-bold text-center text-sm leading-relaxed">
+                    키오스크에서 단서 조각을 입력하고<br/>누렁이의 친구가 누구인지 밝혀보세요! 🐄
+                  </p>
+
+                  {/* QR 코드 영역 */}
+                  <div className="w-full bg-s-beige bg-opacity-40 rounded-2xl p-5 flex flex-col items-center gap-3">
+                    <p className="text-sm font-extrabold text-brown-dark">📋 만족도 조사</p>
+                    <p className="text-xs text-gray-500 text-center">탐험은 어떠셨나요?<br/>소중한 의견을 남겨주세요!</p>
+                    <div className="bg-white rounded-2xl p-3 shadow-sm">
+                      <img
+                        src={"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent("https://forms.gle/j8Kn8BCGz42ErNxC9")}
+                        alt="만족도 조사 QR"
+                        className="w-44 h-44"
+                      />
+                    </div>
+                    <a
+                      href="https://forms.gle/j8Kn8BCGz42ErNxC9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-brown-dark underline font-bold"
+                    >
+                      링크로 바로 가기
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      }
+
       /* ─── 범위 초과 방어 ─── */
       if (step >= stages.length) {
         return (
@@ -794,6 +856,7 @@
       /* ═══ type: story ═══ */
       if (stage.type === "story") {
         return (
+          <>
           <div className="min-h-screen flex flex-col items-center py-6 px-4">
             <div className="w-full max-w-md">
               <ClueBar />
@@ -820,6 +883,15 @@
                       className="text-brown-dark font-semibold leading-relaxed text-[15px] text-center"
                     />
                   </CharacterBubble>
+                  {/* 지도 다시보기 버튼 */}
+                  {stage.showMapButton && (
+                    <button
+                      onClick={() => setShowMapModal(true)}
+                      className="w-full mb-3 bg-s-beige hover:bg-brown-light text-brown-dark hover:text-white font-bold py-3 rounded-2xl transition-all active:scale-95 border-2 border-brown-light text-sm flex items-center justify-center gap-2"
+                    >
+                      🗺️ 지도 다시보기
+                    </button>
+                  )}
                   <button
                     onClick={goNext}
                     className="w-full bg-brown-dark hover:bg-brown-light text-white font-bold py-4 rounded-2xl transition-all active:scale-95 shadow-md text-base"
@@ -830,6 +902,40 @@
               </div>
             </div>
           </div>
+
+          {/* 지도 팝업 모달 */}
+          {showMapModal && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{backgroundColor: 'rgba(0,0,0,0.6)'}}
+              onClick={() => setShowMapModal(false)}
+            >
+              <div
+                className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="bg-brown-dark py-4 px-4 flex items-center justify-between">
+                  <h3 className="text-white font-extrabold text-base">🗺️ 골목 길 안내</h3>
+                  <button
+                    onClick={() => setShowMapModal(false)}
+                    className="text-white text-2xl font-bold leading-none hover:opacity-70 transition-opacity"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="p-4">
+                  <AlleyMap />
+                  <button
+                    onClick={() => setShowMapModal(false)}
+                    className="w-full mt-4 bg-brown-dark hover:bg-brown-light text-white font-bold py-3 rounded-2xl transition-all active:scale-95"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          </>
         );
       }
 
@@ -1084,7 +1190,7 @@
                   </CharacterBubble>
 
                   <button
-                    onClick={() => { try { sessionStorage.removeItem('somak_step'); sessionStorage.removeItem('somak_clues'); } catch(e) {} window.location.reload(); }}
+                    onClick={() => setShowComplete(true)}
                     className="w-full bg-s-olive hover:bg-brown-dark text-white font-bold py-4 rounded-2xl transition-all active:scale-95 shadow-md text-base"
                   >
                     {stage.button}
