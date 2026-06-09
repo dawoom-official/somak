@@ -633,8 +633,8 @@
     ══════════════════════════════════════ */
     function App() {
       // 세션 저장 복원
-      const savedStep = (() => { try { const v = sessionStorage.getItem('somak_step'); return v !== null ? parseInt(v) : -1; } catch(e) { return -1; } })();
-      const savedClues = (() => { try { const v = sessionStorage.getItem('somak_clues'); return v ? JSON.parse(v) : []; } catch(e) { return []; } })();
+      const savedStep = (() => { try { const v = localStorage.getItem('somak_step'); return v !== null ? parseInt(v) : -1; } catch(e) { return -1; } })();
+      const savedClues = (() => { try { const v = localStorage.getItem('somak_clues'); return v ? JSON.parse(v) : []; } catch(e) { return []; } })();
 
       const [step, setStep] = useState(savedStep);
       const [inputValue, setInputValue] = useState("");
@@ -658,7 +658,7 @@
         setErrorMsg("");
         setStep(prev => {
           const next = prev + 1;
-          try { sessionStorage.setItem('somak_step', next); } catch(e) {}
+          try { localStorage.setItem('somak_step', next); } catch(e) {}
           return next;
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -693,7 +693,7 @@
           setCollectedClues(prev => {
             if (prev.find(c => c.index === stage.clueIndex)) return prev;
             const next = [...prev, { letter: stage.clueFragment, index: stage.clueIndex }];
-            try { sessionStorage.setItem('somak_clues', JSON.stringify(next)); } catch(e) {}
+            try { localStorage.setItem('somak_clues', JSON.stringify(next)); } catch(e) {}
             return next;
           });
         } else {
@@ -738,7 +738,7 @@
                   </div>
                 </div>
                 <button
-                  onClick={() => { setStep(0); try { sessionStorage.setItem('somak_step', 0); } catch(e) {} }}
+                  onClick={() => { setStep(0); try { localStorage.setItem('somak_step', 0); } catch(e) {} }}
                   className="w-full bg-brown-dark hover:bg-brown-light text-white text-lg font-bold py-4 px-6 rounded-2xl transition-all shadow-md active:scale-95"
                 >
                   탐험 시작하기
